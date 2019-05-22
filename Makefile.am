@@ -180,3 +180,4 @@ endif
 if ENABLE_MODULE_RECOVERY
 include src/modules/recovery/Makefile.am.include
 endif
+LDFLAGS = -no-undefined
