@@ -23,6 +23,10 @@ public class NativeSecp256k1Test {
 
         result = NativeSecp256k1.verify( data, sig, pub);
         assertEquals( result, true , "testVerifyPos");
+
+        byte[] sigCompact = BaseEncoding.base16().lowerCase().decode("79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798294F14E883B3F525B5367756C2A11EF6CF84B730B36C17CB0C56F0AAB2C98589".toLowerCase());
+        result = NativeSecp256k1.verify( data, sigCompact, pub);
+        assertEquals( result, true , "testVerifyPos");
     }
 
     /**
@@ -120,6 +124,17 @@ public class NativeSecp256k1Test {
         assertEquals( sigString, "" , "testSignNeg");
     }
 
+    public static void testSignCompactPos() throws AssertFailException{
+
+        byte[] data = BaseEncoding.base16().lowerCase().decode("CF80CD8AED482D5D1527D7DC72FCEFF84E6326592848447D2DC0B0E87DFC9A90".toLowerCase()); //sha256hash of "testing"
+        byte[] sec = BaseEncoding.base16().lowerCase().decode("67E56582298859DDAE725F972992A07C6C4FB9F62A8FFF58CE3CA926A1063530".toLowerCase());
+
+        byte[] resultArr = NativeSecp256k1.signCompact(data, sec);
+        String sigString = BaseEncoding.base16().upperCase().encode(resultArr);
+        assertEquals( sigString, "182A108E1448DC8F1FB467D06A0F3BB8EA0533584CB954EF8DA112F1D60E39A21C66F36DA211C087F3AF88B50EDF4F9BDAA6CF5FD6817E74DCA34DB12390C6E9" , "testSignCompactPos");
+        //assertEquals( sigString, "30 44 02 20 182A108E1448DC8F1FB467D06A0F3BB8EA0533584CB954EF8DA112F1D60E39A2 02 20 1C66F36DA211C087F3AF88B50EDF4F9BDAA6CF5FD6817E74DCA34DB12390C6E9" , "testSignPos");
+    }
+
     /**
       * This tests private key tweak-add
       */
@@ -211,6 +226,8 @@ public class NativeSecp256k1Test {
         //Test sign() success/fail
         testSignPos();
         testSignNeg();
+
+        testSignCompactPos();
 
         //Test privKeyTweakAdd() 1
         testPrivKeyTweakAdd_1();
