@@ -86,6 +86,16 @@ public class NativeSecp256k1Test {
     }
 
     /**
+     * This tests public key create() for a valid secretkey
+     */
+    public static void testPubKeyParse() throws AssertFailException{
+        byte[] pub = BaseEncoding.base16().lowerCase().decode("02C591A8FF19AC9C4E4E5793673B83123437E975285E7B442F4EE2654DFFCA5E2D".toLowerCase());
+        byte[] resultArr = NativeSecp256k1.parsePubkey(pub);
+        String pubkeyString = BaseEncoding.base16().upperCase().encode(resultArr);
+        assertEquals( pubkeyString , "04C591A8FF19AC9C4E4E5793673B83123437E975285E7B442F4EE2654DFFCA5E2D2103ED494718C697AC9AEBCFD19612E224DB46661011863ED2FC54E71861E2A6" , "testPubKeyParse");
+    }
+
+    /**
       * This tests sign() for a valid secretkey
       */
     public static void testSignPos() throws AssertFailException{
@@ -195,6 +205,8 @@ public class NativeSecp256k1Test {
         //Test computePubkey() success/fail
         testPubKeyCreatePos();
         testPubKeyCreateNeg();
+
+        testPubKeyParse();
 
         //Test sign() success/fail
         testSignPos();

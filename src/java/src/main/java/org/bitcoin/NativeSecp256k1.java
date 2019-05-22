@@ -179,6 +179,35 @@ public class NativeSecp256k1 {
         return retVal == 0 ? new byte[0]: pubArr;
     }
 
+    public static byte[] parsePubkey(byte[] pubkey) throws AssertFailException{
+        checkArgument(pubkey.length == 33 || pubkey.length == 65);
+
+        ByteBuffer byteBuff = nativeECDSABuffer.get();
+        if (byteBuff == null || byteBuff.capacity() < pubkey.length) {
+            byteBuff = ByteBuffer.allocateDirect(pubkey.length);
+            byteBuff.order(ByteOrder.nativeOrder());
+            nativeECDSABuffer.set(byteBuff);
+        }
+        byteBuff.rewind();
+        byteBuff.put(pubkey);
+
+        byte[][] retByteArray;
+
+        r.lock();
+        try {
+            retByteArray = secp256k1_ec_pubkey_parse(byteBuff, Secp256k1Context.getContext(), pubkey.length);
+        } finally {
+            r.unlock();
+        }
+
+        byte[] pubArr = retByteArray[0];
+        int pubLen = new BigInteger(new byte[] { retByteArray[1][0] }).intValue();
+        int retVal = new BigInteger(new byte[] { retByteArray[1][1] }).intValue();
+
+        assertEquals(pubArr.length, 65, "Got bad pubkey length.");
+
+        return retVal == 0 ? new byte[0]: pubArr;
+    }
     /**
      * libsecp256k1 Cleanup - This destroys the secp256k1 context object
      * This should be called at the end of the program for proper cleanup of the context.
