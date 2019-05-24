@@ -243,6 +243,28 @@ public class NativeSecp256k1 {
         }
     }
 
+    public static byte[] privKeyNegate(byte[] privkey) throws AssertFailException {
+        checkArgument(privkey.length == 32);
+        ByteBuffer byteBuff = pack(privkey);
+
+        byte[][] retByteArray;
+        r.lock();
+        try {
+            retByteArray = secp256k1_privkey_negate(byteBuff, Secp256k1Context.getContext());
+        } finally {
+            r.unlock();
+        }
+
+        byte[] privArr = retByteArray[0];
+
+        int privLen = (byte) new BigInteger(new byte[]{retByteArray[1][0]}).intValue() & 0xFF;
+        int retVal = new BigInteger(new byte[]{retByteArray[1][1]}).intValue();
+
+        assertEquals(privArr.length, privLen, "Got bad privkey length.");
+        assertEquals(retVal, 1, "Failed return value check.");
+
+        return privArr;
+    }
     /**
      * libsecp256k1 PrivKey Tweak-Mul - Tweak privkey by multiplying to it
      *
@@ -268,8 +290,7 @@ public class NativeSecp256k1 {
         int privLen = (byte) new BigInteger(new byte[]{retByteArray[1][0]}).intValue() & 0xFF;
         int retVal = new BigInteger(new byte[]{retByteArray[1][1]}).intValue();
 
-        assertEquals(privArr.length, privLen, "Got bad pubkey length.");
-
+        assertEquals(privArr.length, privLen, "Got bad privkey length.");
         assertEquals(retVal, 1, "Failed return value check.");
 
         return privArr;
@@ -305,6 +326,29 @@ public class NativeSecp256k1 {
         assertEquals(retVal, 1, "Failed return value check.");
 
         return privArr;
+    }
+
+    public static byte[] pubKeyNegate(byte[] pubkey) throws AssertFailException {
+        checkArgument(pubkey.length == 33 || pubkey.length == 65);
+        ByteBuffer byteBuff = pack(pubkey);
+
+        byte[][] retByteArray;
+        r.lock();
+        try {
+            retByteArray = secp256k1_pubkey_negate(byteBuff, Secp256k1Context.getContext(), pubkey.length);
+        } finally {
+            r.unlock();
+        }
+
+        byte[] pubArr = retByteArray[0];
+
+        int pubLen = (byte) new BigInteger(new byte[]{retByteArray[1][0]}).intValue() & 0xFF;
+        int retVal = new BigInteger(new byte[]{retByteArray[1][1]}).intValue();
+
+        assertEquals(pubArr.length, pubLen, "Got bad pubkey length.");
+        assertEquals(retVal, 1, "Failed return value check.");
+
+        return pubArr;
     }
 
     /**
@@ -423,9 +467,13 @@ public class NativeSecp256k1 {
 
     private static native int secp256k1_context_randomize(ByteBuffer byteBuff, long context);
 
+    private static native byte[][] secp256k1_privkey_negate(ByteBuffer byteBuff, long context);
+
     private static native byte[][] secp256k1_privkey_tweak_add(ByteBuffer byteBuff, long context);
 
     private static native byte[][] secp256k1_privkey_tweak_mul(ByteBuffer byteBuff, long context);
+
+    private static native byte[][] secp256k1_pubkey_negate(ByteBuffer byteBuff, long context, int pubLen);
 
     private static native byte[][] secp256k1_pubkey_tweak_add(ByteBuffer byteBuff, long context, int pubLen);
 
