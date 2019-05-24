@@ -118,7 +118,16 @@ public class NativeSecp256k1Test {
         byte[] pub = BaseEncoding.base16().lowerCase().decode("02C591A8FF19AC9C4E4E5793673B83123437E975285E7B442F4EE2654DFFCA5E2D".toLowerCase());
         byte[] resultArr = NativeSecp256k1.parsePubkey(pub);
         String pubkeyString = BaseEncoding.base16().upperCase().encode(resultArr);
-        assertEquals(pubkeyString, "04C591A8FF19AC9C4E4E5793673B83123437E975285E7B442F4EE2654DFFCA5E2D2103ED494718C697AC9AEBCFD19612E224DB46661011863ED2FC54E71861E2A6", "testPubKeyParse");
+        assertEquals(pubkeyString, "04C591A8FF19AC9C4E4E5793673B83123437E975285E7B442F4EE2654DFFCA5E2D2103ED494718C697AC9AEBCFD19612E224DB46661011863ED2FC54E71861E2A6", "testPubKeyAdd");
+    }
+
+    @Test
+    public void testPubKeyAdd() throws AssertFailException {
+        byte[] pub1 = BaseEncoding.base16().lowerCase().decode("041b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f70beaf8f588b541507fed6a642c5ab42dfdf8120a7f639de5122d47a69a8e8d1".toLowerCase());
+        byte[] pub2 = BaseEncoding.base16().lowerCase().decode("044d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d07662a3eada2d0fe208b6d257ceb0f064284662e857f57b66b54c198bd310ded36d0".toLowerCase());
+        byte[] pub3 = NativeSecp256k1.pubKeyAdd(pub1, pub2);
+        String pubkeyString = BaseEncoding.base16().upperCase().encode(pub3);
+        assertEquals(pubkeyString, "04531FE6068134503D2723133227C867AC8FA6C83C537E9A44C3C5BDBDCB1FE3379E92C265E71E481BA82A84675A47AC705A200FCD524E92D93B0E7386F26A5458", "testPubKeyAdd");
     }
 
     /**

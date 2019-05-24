@@ -415,6 +415,30 @@ public class NativeSecp256k1 {
         return pubArr;
     }
 
+    public static byte[] pubKeyAdd(byte[] pubkey1, byte[] pubkey2) throws AssertFailException {
+        checkArgument(pubkey1.length == 33 || pubkey1.length == 65);
+        checkArgument(pubkey2.length == 33 || pubkey2.length == 65);
+        ByteBuffer byteBuff = pack(pubkey1, pubkey2);
+
+        byte[][] retByteArray;
+        r.lock();
+        try {
+            retByteArray = secp256k1_ec_pubkey_add(byteBuff, Secp256k1Context.getContext(), pubkey1.length, pubkey2.length);
+        } finally {
+            r.unlock();
+        }
+
+        byte[] pubArr = retByteArray[0];
+
+        int pubLen = (byte) new BigInteger(new byte[]{retByteArray[1][0]}).intValue() & 0xFF;
+        int retVal = new BigInteger(new byte[]{retByteArray[1][1]}).intValue();
+
+        assertEquals(65, pubLen, "Got bad pubkey length.");
+        assertEquals(retVal, 1, "Failed return value check.");
+
+        return pubArr;
+    }
+
     /**
      * libsecp256k1 create ECDH secret - constant time ECDH calculation
      *
@@ -492,6 +516,8 @@ public class NativeSecp256k1 {
     private static native byte[][] secp256k1_ec_pubkey_create(ByteBuffer byteBuff, long context);
 
     private static native byte[][] secp256k1_ec_pubkey_parse(ByteBuffer byteBuff, long context, int inputLen);
+
+    private static native byte[][] secp256k1_ec_pubkey_add(ByteBuffer byteBuff, long context, int lent1, int len2);
 
     private static native byte[][] secp256k1_ecdh(ByteBuffer byteBuff, long context, int inputLen);
 
