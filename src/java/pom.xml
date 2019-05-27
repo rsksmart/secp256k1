@@ -3,7 +3,7 @@
     <groupId>fr.acinq.bitcoin</groupId>
     <artifactId>secp256k1-jni</artifactId>
     <packaging>jar</packaging>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
     <description>secp256k1 JNI bindings</description>
     <url>https://github.com/ACINQ/secp256k1</url>
     <name>secp256k1-jni</name>
@@ -23,7 +23,7 @@
         <connection>scm:git:git@github.com:ACINQ/secp256k1.git</connection>
         <developerConnection>scm:git:git@github.com:ACINQ/secp256k1.git</developerConnection>
         <url>git@github.com:ACINQ/secp256k1.git</url>
-        <tag>v1.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
