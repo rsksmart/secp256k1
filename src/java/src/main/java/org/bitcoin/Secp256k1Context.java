@@ -34,6 +34,9 @@ public class Secp256k1Context {
               fr.acinq.Secp256k1Loader.initialize();
           }
           contextRef = secp256k1_init_context();
+      } catch (java.lang.UnsatisfiedLinkError e) {
+          System.out.println("Cannot load secp256k1 native library: " + e.toString());
+          isEnabled = false;
       } catch (Exception e) {
           System.out.println("Cannot load secp256k1 native library: " + e.toString());
           isEnabled = false;
