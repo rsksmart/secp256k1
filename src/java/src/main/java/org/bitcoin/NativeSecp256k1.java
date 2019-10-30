@@ -468,6 +468,27 @@ public class NativeSecp256k1 {
         return resArr;
     }
 
+    public static byte[] ecdsaRecover(byte[] sig, byte[] message, int recid) throws AssertFailException {
+        checkArgument(sig.length == 64);
+        checkArgument(message.length == 32);
+        ByteBuffer byteBuff = pack(sig, message);
+
+        byte[][] retByteArray;
+        r.lock();
+        try {
+            retByteArray = secp256k1_ecdsa_recover(byteBuff, Secp256k1Context.getContext(), recid);
+        } finally {
+            r.unlock();
+        }
+        byte[] resArr = retByteArray[0];
+        int retVal = new BigInteger(new byte[]{retByteArray[1][0]}).intValue();
+
+        assertEquals(resArr.length, 65, "Got bad result length.");
+        assertEquals(retVal, 1, "Failed return value check.");
+
+        return resArr;
+    }
+
     /**
      * libsecp256k1 randomize - updates the context randomization
      *
@@ -521,4 +542,5 @@ public class NativeSecp256k1 {
 
     private static native byte[][] secp256k1_ecdh(ByteBuffer byteBuff, long context, int inputLen);
 
+    private static native byte[][] secp256k1_ecdsa_recover(ByteBuffer byteBuff, long context, int recid);
 }

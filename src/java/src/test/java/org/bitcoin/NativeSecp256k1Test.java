@@ -250,4 +250,16 @@ public class NativeSecp256k1Test {
         String ecdhString = BaseEncoding.base16().upperCase().encode(resultArr);
         assertEquals(ecdhString, "2A2A67007A926E6594AF3EB564FC74005B37A9C8AEF2033C4552051B5C87F043", "testCreateECDHSecret");
     }
+
+    @Test
+    public void testEcdsaRecover() throws AssertFailException {
+        byte[] data = BaseEncoding.base16().lowerCase().decode("CF80CD8AED482D5D1527D7DC72FCEFF84E6326592848447D2DC0B0E87DFC9A90".toLowerCase()); //sha256hash of "testing"
+        byte[] sec = BaseEncoding.base16().lowerCase().decode("67E56582298859DDAE725F972992A07C6C4FB9F62A8FFF58CE3CA926A1063530".toLowerCase());
+        byte[] pub = NativeSecp256k1.computePubkey(sec);
+
+        byte[] sig = NativeSecp256k1.signCompact(data, sec);
+        byte[] pub0 = NativeSecp256k1.ecdsaRecover(sig, data, 0);
+        byte[] pub1 = NativeSecp256k1.ecdsaRecover(sig, data, 1);
+        assertEquals(Arrays.equals(pub, pub0) || Arrays.equals(pub, pub1), true, "testEcdsaRecover");
+    }
 }

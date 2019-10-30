@@ -143,6 +143,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1ec_1p
 JNIEXPORT jobjectArray JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1ecdh
   (JNIEnv *, jclass, jobject, jlong, jint);
 
+/*
+ * Class:     org_bitcoin_NativeSecp256k1
+ * Method:    secp256k1_ecdsa_recover
+ * Signature: (Ljava/nio/ByteBuffer;JI)[[B
+ */
+JNIEXPORT jobjectArray JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1ecdsa_1recover
+  (JNIEnv *, jclass, jobject, jlong, jint);
+
 #ifdef __cplusplus
 }
 #endif
