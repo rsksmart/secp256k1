@@ -12,34 +12,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <scm>
-        <connection>scm:git:git@github.com:ACINQ/secp256k1.git</connection>
-        <developerConnection>scm:git:git@github.com:ACINQ/secp256k1.git</developerConnection>
-        <url>git@github.com:ACINQ/secp256k1.git</url>
-        <tag>HEAD</tag>
-    </scm>
-
-    <licenses>
-        <license>
-            <url>https://raw.githubusercontent.com/ACINQ/secp256k1/jni-embed/src/java/pom.xml/LICENSE</url>
-            <name>Apache License</name>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>sstone</id>
-        </developer>
-    </developers>
-
     <build>
         <plugins>
             <plugin>

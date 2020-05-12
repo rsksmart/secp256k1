@@ -168,11 +168,11 @@ public class NativeSecp256k1 {
      * libsecp256k1 Compute Pubkey - computes public key from secret key
      *
      * @param seckey ECDSA Secret key, 32 bytes
+     * @param compressed to compute a compressed or uncompressed pubkey
      * @throws AssertFailException if parameters are not valid
-     * @return the corresponding public key (uncompressed)
+     * @return the corresponding public key (compressed or uncompressed)
      */
-    //TODO add a 'compressed' arg
-    public static byte[] computePubkey(byte[] seckey) throws AssertFailException {
+    public static byte[] computePubkey(byte[] seckey, boolean compressed) throws AssertFailException {
         checkArgument(seckey.length == 32);
         ByteBuffer byteBuff = pack(seckey);
 
@@ -180,7 +180,7 @@ public class NativeSecp256k1 {
 
         r.lock();
         try {
-            retByteArray = secp256k1_ec_pubkey_create(byteBuff, Secp256k1Context.getContext());
+            retByteArray = secp256k1_ec_pubkey_create(byteBuff, Secp256k1Context.getContext(), compressed ? 1 : 0);
         } finally {
             r.unlock();
         }
@@ -191,7 +191,9 @@ public class NativeSecp256k1 {
 
         assertEquals(pubArr.length, pubLen, "Got bad pubkey length.");
 
-        return retVal == 0 ? new byte[0] : pubArr;
+        byte[] pub = retVal == 0 ? new byte[0] : pubArr;
+
+        return pub;
     }
 
     /**
@@ -468,7 +470,7 @@ public class NativeSecp256k1 {
         return resArr;
     }
 
-    public static byte[] ecdsaRecover(byte[] sig, byte[] message, int recid) throws AssertFailException {
+    public static byte[] ecdsaRecover(byte[] sig, byte[] message, int recid, boolean compressed) throws AssertFailException {
         checkArgument(sig.length == 64);
         checkArgument(message.length == 32);
         ByteBuffer byteBuff = pack(sig, message);
@@ -476,14 +478,18 @@ public class NativeSecp256k1 {
         byte[][] retByteArray;
         r.lock();
         try {
-            retByteArray = secp256k1_ecdsa_recover(byteBuff, Secp256k1Context.getContext(), recid);
+            retByteArray = secp256k1_ecdsa_recover(byteBuff, Secp256k1Context.getContext(), recid, compressed ? 1 : 0);
         } finally {
             r.unlock();
         }
         byte[] resArr = retByteArray[0];
         int retVal = new BigInteger(new byte[]{retByteArray[1][0]}).intValue();
 
-        assertEquals(resArr.length, 65, "Got bad result length.");
+        if(compressed)
+            assertEquals(resArr.length, 33, "Got bad result length.");
+        else
+            assertEquals(resArr.length, 65, "Got bad result length.");
+
         assertEquals(retVal, 1, "Failed return value check.");
 
         return resArr;
@@ -534,7 +540,7 @@ public class NativeSecp256k1 {
 
     private static native int secp256k1_ec_seckey_verify(ByteBuffer byteBuff, long context);
 
-    private static native byte[][] secp256k1_ec_pubkey_create(ByteBuffer byteBuff, long context);
+    private static native byte[][] secp256k1_ec_pubkey_create(ByteBuffer byteBuff, long context, int compressed);
 
     private static native byte[][] secp256k1_ec_pubkey_parse(ByteBuffer byteBuff, long context, int inputLen);
 
@@ -542,5 +548,7 @@ public class NativeSecp256k1 {
 
     private static native byte[][] secp256k1_ecdh(ByteBuffer byteBuff, long context, int inputLen);
 
-    private static native byte[][] secp256k1_ecdsa_recover(ByteBuffer byteBuff, long context, int recid);
+    private static native byte[][] secp256k1_ecdsa_recover(ByteBuffer byteBuff, long context, int recid, int compressed);
+
+
 }

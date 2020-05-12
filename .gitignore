@@ -10,9 +10,9 @@ tests
 exhaustive_tests
 gen_context
 *.exe
-*.so
 *.a
 !.gitignore
+.DS_Store
 
 Makefile
 configure

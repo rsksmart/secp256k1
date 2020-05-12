@@ -32,12 +32,12 @@ JNI bindings are built on Linux, using docker for Windows and Osx libraries.
 
 To build Linux native libraries:
 ```
-$ ./autogen.sh && ./configure --enable-experimental --enable-module_ecdh --enable-jni && make clean && make
+$ ./autogen.sh && ./configure --enable-module-recovery --enable-experimental --enable-module_ecdh --enable-jni && make clean && make
 ```
 
 To build Windows native libraries:
 ```
-$ ./docker/dockcross-windows-x64 -a --rm bash -c './autogen.sh && JAVA_HOME=`pwd`/src/java/jniheaders ./configure --host=x86_64-w64-mingw32 --enable-experimental --enable-module_ecdh --enable-jni && make clean && make'
+$ ./docker/dockcross-windows-x64 -a --rm bash -c './autogen.sh && JAVA_HOME=`pwd`/src/java/jniheaders ./configure --host=x86_64-w64-mingw32 --enable-experimental --enable-module_ecdh --enable-jni --enable-module-recovery && make clean && make'
 ```
 
 To build oxs native libraries:

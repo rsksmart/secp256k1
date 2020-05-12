@@ -172,7 +172,7 @@ SECP256K1_API jint JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1ec_1secke
 }
 
 SECP256K1_API jobjectArray JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1ec_1pubkey_1create
-  (JNIEnv* env, jclass classObject, jobject byteBufferObject, jlong ctx_l)
+  (JNIEnv* env, jclass classObject, jobject byteBufferObject, jlong ctx_l, jint compressed)
 {
   secp256k1_context *ctx = (secp256k1_context*)(uintptr_t)ctx_l;
   const unsigned char* secKey = (unsigned char*) (*env)->GetDirectBufferAddress(env, byteBufferObject);
@@ -189,7 +189,15 @@ SECP256K1_API jobjectArray JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1e
   size_t outputLen = 65;
 
   if( ret ) {
-    int ret2 = secp256k1_ec_pubkey_serialize(ctx,outputSer, &outputLen, &pubkey,SECP256K1_EC_UNCOMPRESSED );(void)ret2;
+    int ret2;
+
+    if(compressed) {
+      ret2 = secp256k1_ec_pubkey_serialize(ctx,outputSer, &outputLen, &pubkey,SECP256K1_EC_COMPRESSED );
+    } else {
+      ret2 = secp256k1_ec_pubkey_serialize(ctx,outputSer, &outputLen, &pubkey,SECP256K1_EC_UNCOMPRESSED );
+    }
+
+    (void)ret2;
   }
 
   intsarray[0] = outputLen;
@@ -588,7 +596,7 @@ SECP256K1_API jobjectArray JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1e
  * Signature: (Ljava/nio/ByteBuffer;JI)[[B
  */
 JNIEXPORT jobjectArray JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1ecdsa_1recover
-  (JNIEnv *env, jclass classObject, jobject byteBufferObject, jlong ctx_l, jint recid)
+  (JNIEnv *env, jclass classObject, jobject byteBufferObject, jlong ctx_l, jint recid, jint compressed)
 {
     secp256k1_context *ctx = (secp256k1_context*)(uintptr_t)ctx_l;
     const unsigned char* sigdata = (*env)->GetDirectBufferAddress(env, byteBufferObject);
@@ -605,7 +613,11 @@ JNIEXPORT jobjectArray JNICALL Java_org_bitcoin_NativeSecp256k1_secp256k1_1ecdsa
     if (ret) {
         ret = secp256k1_ecdsa_recover(ctx, &pub, &sig, msgdata);
         if (ret) {
-            ret = secp256k1_ec_pubkey_serialize(ctx, outputSer, &outputLen, &pub, SECP256K1_EC_UNCOMPRESSED );
+            if(compressed) {
+                ret = secp256k1_ec_pubkey_serialize(ctx, outputSer, &outputLen, &pub, SECP256K1_EC_COMPRESSED);
+            } else {
+                ret = secp256k1_ec_pubkey_serialize(ctx, outputSer, &outputLen, &pub, SECP256K1_EC_UNCOMPRESSED);
+            }
         }
     }
 

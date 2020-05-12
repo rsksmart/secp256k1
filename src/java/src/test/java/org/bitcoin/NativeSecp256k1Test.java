@@ -44,7 +44,6 @@ public class NativeSecp256k1Test {
         byte[] pub = BaseEncoding.base16().lowerCase().decode("040A629506E1B65CD9D2E0BA9C75DF9C4FED0DB16DC9625ED14397F0AFC836FAE595DC53F8B0EFE61E703075BD9B143BAC75EC0E19F82A2208CAEB32BE53414C40".toLowerCase());
 
         result = NativeSecp256k1.verify(data, sig, pub);
-        //System.out.println(" TEST " + new BigInteger(1, resultbytes).toString(16));
         assertEquals(result, false, "testVerifyNeg");
     }
 
@@ -81,7 +80,7 @@ public class NativeSecp256k1Test {
     public void testPubKeyCreatePos() throws AssertFailException {
         byte[] sec = BaseEncoding.base16().lowerCase().decode("67E56582298859DDAE725F972992A07C6C4FB9F62A8FFF58CE3CA926A1063530".toLowerCase());
 
-        byte[] resultArr = NativeSecp256k1.computePubkey(sec);
+        byte[] resultArr = NativeSecp256k1.computePubkey(sec, false);
         String pubkeyString = BaseEncoding.base16().upperCase().encode(resultArr);
         assertEquals(pubkeyString, "04C591A8FF19AC9C4E4E5793673B83123437E975285E7B442F4EE2654DFFCA5E2D2103ED494718C697AC9AEBCFD19612E224DB46661011863ED2FC54E71861E2A6", "testPubKeyCreatePos");
     }
@@ -93,7 +92,7 @@ public class NativeSecp256k1Test {
     public void testPubKeyCreateNeg() throws AssertFailException {
         byte[] sec = BaseEncoding.base16().lowerCase().decode("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF".toLowerCase());
 
-        byte[] resultArr = NativeSecp256k1.computePubkey(sec);
+        byte[] resultArr = NativeSecp256k1.computePubkey(sec, false);
         String pubkeyString = BaseEncoding.base16().upperCase().encode(resultArr);
         assertEquals(pubkeyString, "", "testPubKeyCreateNeg");
     }
@@ -101,7 +100,7 @@ public class NativeSecp256k1Test {
     @Test
     public void testPubKeyNegatePos() throws AssertFailException {
         byte[] sec = BaseEncoding.base16().lowerCase().decode("67E56582298859DDAE725F972992A07C6C4FB9F62A8FFF58CE3CA926A1063530".toLowerCase());
-        byte[] pubkey = NativeSecp256k1.computePubkey(sec);
+        byte[] pubkey = NativeSecp256k1.computePubkey(sec, false);
         String pubkeyString = BaseEncoding.base16().upperCase().encode(pubkey);
         assertEquals(pubkeyString, "04C591A8FF19AC9C4E4E5793673B83123437E975285E7B442F4EE2654DFFCA5E2D2103ED494718C697AC9AEBCFD19612E224DB46661011863ED2FC54E71861E2A6", "testPubKeyCreatePos");
 
@@ -252,14 +251,24 @@ public class NativeSecp256k1Test {
     }
 
     @Test
-    public void testEcdsaRecover() throws AssertFailException {
+    public void testEcdsaRecoverCompressed() throws AssertFailException {
+        testEcdsaRecover(true);
+    }
+
+    @Test
+    public void testEcdsaRecoverUncompressed() throws AssertFailException {
+        testEcdsaRecover(false);
+    }
+
+    private void testEcdsaRecover(boolean compressed) throws AssertFailException {
         byte[] data = BaseEncoding.base16().lowerCase().decode("CF80CD8AED482D5D1527D7DC72FCEFF84E6326592848447D2DC0B0E87DFC9A90".toLowerCase()); //sha256hash of "testing"
         byte[] sec = BaseEncoding.base16().lowerCase().decode("67E56582298859DDAE725F972992A07C6C4FB9F62A8FFF58CE3CA926A1063530".toLowerCase());
-        byte[] pub = NativeSecp256k1.computePubkey(sec);
+        byte[] pub = NativeSecp256k1.computePubkey(sec, compressed);
+
 
         byte[] sig = NativeSecp256k1.signCompact(data, sec);
-        byte[] pub0 = NativeSecp256k1.ecdsaRecover(sig, data, 0);
-        byte[] pub1 = NativeSecp256k1.ecdsaRecover(sig, data, 1);
-        assertEquals(Arrays.equals(pub, pub0) || Arrays.equals(pub, pub1), true, "testEcdsaRecover");
+        byte[] pub0 = NativeSecp256k1.ecdsaRecover(sig, data, 0, compressed);
+        byte[] pub1 = NativeSecp256k1.ecdsaRecover(sig, data, 1, compressed);
+        assertEquals(Arrays.equals(pub, pub0) || Arrays.equals(pub, pub1), true, "testEcdsaRecover" + (compressed ? "Compressed" : "Uncompressed"));
     }
 }

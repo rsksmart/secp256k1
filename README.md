@@ -1,11 +1,12 @@
 libsecp256k1
 ============
 
+This is an RSK fork of ACINQ (a JNI implementation of secp256k1 from bitcoin-core). There are no difference in terms of functionality and performance between this one and bitcoin-core. 
+The only thing to mantain is the [JNI project](src/java/README.md), the rest of the project shouldn't be modified.  
+
 [![Build Status](https://travis-ci.org/bitcoin-core/secp256k1.svg?branch=master)](https://travis-ci.org/bitcoin-core/secp256k1)
 
 Optimized C library for EC operations on curve secp256k1.
-
-This library is a work in progress and is being used to research best practices. Use at your own risk.
 
 Features:
 * secp256k1 ECDSA signing/verification and key generation.
@@ -14,6 +15,9 @@ Features:
 * Constant time, constant memory access signing and pubkey generation.
 * Derandomized DSA (via RFC6979 or with a caller provided function.)
 * Very efficient implementation.
+* Suitable for embedded systems.
+* Optional module for public key recovery.
+* Optional module for ECDH key exchange (experimental).
 
 Implementation details
 ----------------------
