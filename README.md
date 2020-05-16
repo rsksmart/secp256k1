@@ -65,6 +65,12 @@ libsecp256k1 is built using autotools:
     $ make
     $ make check
     $ sudo make install  # optional
+    
+Building JNI Project
+--------------------
+
+Checkout JNI project [README](src/java/README.md)    
+
 
 Exhaustive tests
 -----------

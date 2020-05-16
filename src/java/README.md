@@ -51,3 +51,11 @@ Once you've built native bindings you can build and package the Java library wit
 ```
 $ mvn install
 ```
+
+## Build binaries and Java Library
+
+If you want to do all this process in just one command 
+
+    $ chmod u+x build-binaries-and-jni-project.sh && ./build-binaries-and-jni-project.sh
+
+This script will first build binaries for each SO, then replace them at `src/main/resources/` and finally run a `mvn install`, which will generate a `.jar` at `target/` folder.
