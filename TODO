@@ -1,3 +1,5 @@
 * Unit tests for fieldelem/groupelem, including ones intended to
   trigger fieldelem's boundary cases.
 * Complete constant-time operations for signing/keygen
+
+* complete linux build, .so is not apearing when it should!

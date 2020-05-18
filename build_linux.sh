@@ -1,2 +1,1 @@
-./autogen.sh && ./configure --enable-experimental --enable-module_ecdh --enable-module-recovery --enable-jni && make clean && make
-
+docker run -it --rm -v $(pwd):/workdir  multiarch/crossbuild ./build_linux_inside.sh

@@ -21,7 +21,7 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                    <release>7</release>
+                    
                 </configuration>
             </plugin>
             <plugin>
